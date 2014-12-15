@@ -6,6 +6,8 @@ This program is used to reduce **ER Model** to **Database Schema**. This program
 * Reduces ER Model to Schema.
 * It can apply 1-1, 1-M, M-N and ISA relationship to entities.
 * Multi-Valued attribues are supported.
+* Descriptive attributes are supported.
+* Automatic attribute name conflict resolution.
 * Syntax and semantic errors can be detected in ER Model Description script (ERD).
 
 ###How it Works
@@ -57,6 +59,18 @@ phoneno_mv
 @#EntityOne:M:1:#EntityTwo; // For M-1 Relationship
 @#EntityOne:M:M:#EntityTwo; // For M-M Relationship
 @#EntityOne:ISA:#EntityTwo,#EntityThree,#EntityFour; // For ISA Relationship
+```
+
+* Relations can also be have names with descriptive attributes using following syntax.
+```sh
+@RelationName:#EntityOne:1:1:#EntityTwo; // For 1-1 Relationship without descritive attributes
+@RelationName:arrribute1,attribute2_mv:#EntityOne:1:1:#EntityTwo; // For 1-1 Relationship with descritive attributes
+@RelationName:#EntityOne:1:M:#EntityTwo; // For 1-M Relationship without descritive attributes
+@RelationName:arrribute1,attribute2_mv:#EntityOne:1:M:#EntityTwo; // For 1-M Relationship with descritive attributes
+@RelationName:#EntityOne:M:1:#EntityTwo; // For M-1 Relationship without descritive attributes
+@RelationName:arrribute1,attribute2_mv:#EntityOne:M:1:#EntityTwo; // For M-1 Relationship with descritive attributes
+@RelationName:#EntityOne:M:M:#EntityTwo; // For M-M Relationship without descritive attributes
+@RelationName:arrribute1,attribute2_mv:#EntityOne:M:M:#EntityTwo; // For M-M Relationship with descritive attributes
 ```
 
 ## Live Demo

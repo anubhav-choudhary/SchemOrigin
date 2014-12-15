@@ -1,14 +1,314 @@
-<html>
-<head>
-	<title>Schema Generator</title>
-	<script type="text/javascript" src="compiler.js"></script>
-</head>
-<body>
-<h1>Schema Generator</h1>
-<hr>
-<div id='error'></div>
-<textarea id="script" style="margin: 10px; width: 95%;height: auto; min-height: 300px;"></textarea>
-<br/>
-<center><button onclick="gencode()">Generate Schema</button><center>
-</body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="Anubhav" >
+    <meta name="keyword" content="ER Model Description (ERD) script to Database design.">
+
+    <title>Schema Generator</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="res/css/bootstrap.css" rel="stylesheet">
+    <!--external css-->
+    <link href="res/font-awesome/css/font-awesome.css" rel="stylesheet" />
+        
+    <!-- Custom styles for this template -->
+    <link href="res/css/style.css" rel="stylesheet">
+    <link href="res/css/style-responsive.css" rel="stylesheet">
+    
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+  <section id="container" >
+      <!-- **********************************************************************************************************************************************************
+      TOP BAR CONTENT & NOTIFICATIONS
+      *********************************************************************************************************************************************************** -->
+      <!--header start-->
+      <header class="header black-bg">
+              <div class="sidebar-toggle-box">
+                  <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
+              </div>
+            <!--logo start-->
+            <a href="index.html" class="logo"><b>Schema Generator</b></a>
+            <!--logo end-->
+            <div class="top-menu">
+            	<ul class="nav pull-right top-menu">
+                    <li><a class="logout" href="https://github.com/anubhavcho/SchemaGenerator">View Source on GitHub</a></li>
+            	</ul>
+            </div>
+        </header>
+      <!--header end-->
+      
+      <!-- **********************************************************************************************************************************************************
+      MAIN SIDEBAR MENU
+      *********************************************************************************************************************************************************** -->
+      <!--sidebar start-->
+      <aside>
+          <div id="sidebar"  class="nav-collapse ">
+              <!-- sidebar menu start-->
+              <ul class="sidebar-menu" id="nav-accordion">
+             	  	
+                  <li class="sub-menu" >
+                      <a href="" data-toggle="modal" data-target="#about">
+                          <i class="fa fa-dashboard"></i>
+                          <span>About Schema Generator</span>
+
+                      </a>
+                  </li>
+
+                  <li class="sub-menu">
+                      <a href="" data-toggle="modal" data-target="#feature" >
+                          <i class="fa fa-desktop"></i>
+                          <span>Features</span>
+                      </a>
+                  </li>
+
+                  <li class="sub-menu">
+                      <a href="" data-toggle="modal" data-target="#working">
+                          <i class="fa fa-cogs"></i>
+                          <span>How it works</span>
+                      </a>
+                  </li>
+                  <li class="sub-menu">
+                      <a href="" data-toggle="modal" data-target="#rules">
+                          <i class="fa fa-book"></i>
+                          <span>Guidelines for ERD</span>
+                      </a>
+                  </li>
+                  <li class="sub-menu">
+                      <a href="https://github.com/anubhavcho/SchemaGenerator" >
+                          <i class="fa fa-tasks"></i>
+                          <span>View Source on GitHub</span>
+                      </a>
+                  </li>
+                  <li class="sub-menu">
+                      <a href="" data-toggle="modal" data-target="#credit">
+                          <i class="fa fa-th"></i>
+                          <span>Credits</span>
+                      </a>
+                  </li>
+              </ul>
+              <!-- sidebar menu end-->
+          </div>
+      </aside>
+      <!--sidebar end-->
+      
+      <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+      *********************************************************************************************************************************************************** -->
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper site-min-height">
+          	<h3><i class="fa fa-angle-right"></i> Write ERD to get Database Schema</h3>
+          	<div class="row mt">
+          		<div class="col-lg-12">
+                
+          		<div class="alert alert-success" style="display: none;" id="success"><b>Well done!</b> Your ERD translated successfully.</div>
+                <div class="alert alert-danger" style="display: none;" id="error"><b>Oh snap!</b> Change a few things up and try submitting again.</div>
+                <div class="form-panel">
+                <h4>ER Model Description (ERD)</h4></br>
+                <textarea class="form-control" id="erdscript" spellcheck=false style="min-height:200px;">#Faculty:EmailId_pk,name,address,salary,phone_mv;
+#Student:EmailId_pk,name,address,grade;
+#Course:CourseId_pk,name;
+#Person;
+%%
+@#Faculty:M:1:#Course;
+@#Student:M:M:#Course;
+@#Person:ISA:#Faculty,#Student;
+                </textarea></br>
+                <center><button type="button" class="btn btn-success" onclick="runERD();">Run</button></center>
+
+                </div>
+                
+                <div class="form-panel" id="outputpanel" style="display: none;">
+                <h4>Reduced Schema</h4>
+                <div id="databeseschema">
+                <p class="schema"><span class="entity">PERSON</span> { <span class="pk">emailid</span>, name, <span class="fk">address</span> }</p>
+                <p>FACULTY {emailid, salary, courseid}</p>
+                <p>FACULTY_PHONE {emailid, phone}</p>
+                <p>STUDENT {emailid, grade}</p>
+                <p>STUDENT_COURSE {emailid, courseid}</p>
+                <p>COURSE {courseid, name}</p>
+                </div>
+                </div>
+          		</div>
+          	</div>
+			
+		</section><! --/wrapper -->
+      </section><!-- /MAIN CONTENT -->
+
+      <!--main content end-->
+      <!--footer start-->
+      <footer class="site-footer">
+          <div class="text-center">
+              Hosted on OpenShift by RedHat
+              <a href="#" class="go-top">
+                  <i class="fa fa-angle-up"></i>
+              </a>
+          </div>
+      </footer>
+      <!--footer end-->
+  </section>
+  
+<!-- About Modal -->
+<div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">About Schema Generator</h4>
+            </div>
+            <div class="modal-body">
+                </br>
+                <p class="text-justify">This program is used to reduce <b>ER Model</b> to <b>Database Schema</b>. 
+                    This program accepts the <b>ER Model Description script (ERD)</b>, validates its syntax and sematics. 
+                    If any error found, error message is displayed. Otherwise <b>Database Schema</b> is generated and dispalyed on screen.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>						        
+            </div>
+        </div>
+    </div>
+</div>
+<!--Model End -->
+
+<!-- Feature Modal -->
+<div class="modal fade" id="feature" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Features of Schema Generator</h4>
+            </div>
+            <div class="modal-body">
+                <ol>
+                    <li>Reduces ER Model to Database Schema.</li>
+                    <li>It can apply 1-1, 1-M, M-N and ISA relationship to entities.</li>
+                    <li>Multi-Valued attribues are supported.</li>
+                    <li>Syntax and semantic errors can be detected in ER Model Description script (ERD).</li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>						        
+            </div>
+        </div>
+    </div>
+</div>
+<!--Model End -->
+
+<!-- Working Modal -->
+<div class="modal fade" id="working" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">How it works?</h4>
+            </div>
+            <div class="modal-body">
+                <p>This is a sample ER Model Description Script (ERD)</p>
+                <code>#Faculty:EmailId_pk,name,address,salary,phone_mv;</br>
+                        #Student:EmailId_pk,name,address,grade;</br>
+                        #Course:CourseId_pk,name;</br>
+                        #Person;</br>
+                        %%</br>
+                        @#Faculty:M:1:#Course;</br>
+                        @#Student:M:M:#Course;</br>
+                        @#Person:ISA:#Faculty,#Student;
+                </code><br />
+                <p>Output of this script will be</p>
+                <code>PERSON {emailid, name, address}</br>
+                    FACULTY {emailid, salary, courseid}</br>
+                    FACULTY_PHONE {emailid, phone}</br>
+                    STUDENT {emailid, grade}</br>
+                    STUDENT_COURSE {emailid, courseid}</br>
+                    COURSE {courseid, name}
+                </code>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>						        
+            </div>
+        </div>
+    </div>
+</div>
+<!--Model End -->
+
+<!-- Rules Modal -->
+<div class="modal fade" id="rules" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Guidelines for ERD</h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-justify"><b>ER Description Script (ERD)</b> has two sections seperated by section separator "%%" and the sections are entity defination section and entity relation section. In entity defination section all the entities are defined along with their attributes. In entity relation secion realtion between entities are defined.</p>
+                <p><b>Entity Name :</b> Entity name starts with '#' sign. The next character after # sign must be an alphabet after that numbers and underscore "_" are also allowed. For example</p>
+                <code>#MyEntity<br />#Entity1<br />#Entity_1</code>
+                <p class="text-justify"><strong>Attribute Name :</strong> Name of attribute starts with only alphbets but it can have numbers and underscore "_" sign as well from second postion.</p>
+                <p class="text-justify">If attribute is key, <strong>_pk</strong> is added as suffix. For example</p>
+                <code>rollno_pk</code>
+                <p  class="text-justify">If attribute is multivalued, <strong>_mv</strong> is added as suffix. For exapmle</p>
+                <code>phoneno_mv</code>
+                <p class="text-justify"><strong>Entity Defination :</strong> To define an entity, entity name is given followed by its attribute names.</p>
+                <code>#ENTITY_NAME:attribute1,arrribute2,attribute3;</code>
+                <p class="text-justify"><strong>Entity Relation :</strong> Relations between entities can be defined using following syntax. : Relations between entities can be defined using following syntax.</p>
+                <code>@#EntityOne:1:1:#EntityTwo; // For 1-1 Relationship<br />
+                        @#EntityOne:1:M:#EntityTwo; // For 1-M Relationship<br />
+                        @#EntityOne:M:1:#EntityTwo; // For M-1 Relationship<br />
+                        @#EntityOne:M:M:#EntityTwo; // For M-M Relationship<br />
+                        @#EntityOne:ISA:#EntityTwo,#EntityThree,#EntityFour; // For ISA Relationship</code>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>						        
+            </div>
+        </div>
+    </div>
+</div>
+<!--Model End -->
+
+<!-- About Modal -->
+<div class="modal fade" id="credit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Developed By</h4>
+            </div>
+            <div class="modal-body">
+                </br>
+                <p class="text-justify"><strong>Anubhav Choudhary</strong><br />KIIT University, Bhubaneswar, Odisha, India<br /><strong>GitHub :</strong> <a target="_blank" href="https://github.com/anubhavcho/">https://github.com/anubhavcho/</a><br /><strong>LinkedIn :</strong> <a target="_blank" href="http://in.linkedin.com/in/anubhavcho">http://in.linkedin.com/in/anubhavcho</a></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>						        
+            </div>
+        </div>
+    </div>
+</div>
+<!--Model End -->
+
+
+
+
+
+    <!-- js placed at the end of the document so the pages load faster -->
+    <script src="res/js/jquery.js"></script>
+    <script src="res/js/bootstrap.min.js"></script>
+    <script src="res/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="res/js/jquery.scrollTo.min.js"></script>
+    <script src="res/js/jquery.nicescroll.js" type="text/javascript"></script>
+
+
+    <!--common script for all pages-->
+    <script src="compiler/compiler.js"></script>
+    <script src="res/js/common-scripts.js"></script>
+  </body>
 </html>

@@ -1,10 +1,14 @@
-var Compiler = function(input, error_div) {
+var Compiler = function (input, error_div, output_div) {
 	//==============Shared Components================
-	var showError = function(msg) {
+	var showError = function (msg) {
 		error_div.innerHTML = msg;
 	}
 
-	var getInput = function() {
+	var showOutput = function (msg) {
+		output_div.innerHTML = msg;
+	}
+
+	var getInput = function () {
 		return input.value.trim();
 	}
 	//==============LEX Components===============IP:getInput(); OP: result;====
@@ -95,7 +99,7 @@ var Compiler = function(input, error_div) {
 	{}, //17 Invalid token in lineNo#  Stop
 	];
 
-	var nextState = function(state, ch) {
+	var nextState = function (state, ch) {
 		if (ch == ",") return transTable[state - 1]["A"];
 		else if (ch == ";") return transTable[state - 1]["B"];
 		else if (ch == "#") return transTable[state - 1]["C"];
@@ -109,7 +113,7 @@ var Compiler = function(input, error_div) {
 		else return transTable[state - 1]["O"];
 	}
 
-	var doAction = function(state) {
+	var doAction = function (state) {
 		if (state == 2) {
 			result += "<COMMA/>";
 			lexeme = "";
@@ -157,7 +161,7 @@ var Compiler = function(input, error_div) {
 			currState = 1;
 			return 1;
 		} else if (state == 15) {
-			error = "Error in lineNo#" + currLineNo;
+			error = "Error in lineNo#" + currLineNo + "result : " + result;
 			return 0;
 		} else if (state == 16) {
 			error = "Invalid Table name in lineNo#" + currLineNo;
@@ -168,10 +172,10 @@ var Compiler = function(input, error_div) {
 		}
 	}
 
-	var runLex = function() {
-		var script = getInput();
-		for (var i = 0; i < script.length; i++) {
-			var ch = script.charAt(i);
+	var runLex = function () {
+		var erdscript = getInput();
+		for (var i = 0; i < erdscript.length; i++) {
+			var ch = erdscript.charAt(i);
 			lexeme += ch;
 			currState = nextState(currState, ch);
 			var act = doAction(currState);
@@ -190,7 +194,7 @@ var Compiler = function(input, error_div) {
 	//=============Syntax Component==================IP: result(preserved) OP: syntax_valid;
 
 	var tokens;
-	var getFirstToken = function() {
+	var getFirstToken = function () {
 		if (token == "") return "$";
 		var start = tokens.indexOf("<");
 		var end = tokens.indexOf("/>");
@@ -207,7 +211,7 @@ var Compiler = function(input, error_div) {
 		else if (token.substr(0, 4) == "<END") return "$";
 	}
 
-	var removeFirstToken = function() {
+	var removeFirstToken = function () {
 		var limit = tokens.indexOf("/>");
 		//if(limit==-1) {tokens="";return;}
 		tokens = tokens.substr(limit + 2);
@@ -224,43 +228,52 @@ var Compiler = function(input, error_div) {
 		},
 		"B": {
 			"l": "lAmS",
-			"mS": "m"
+			"m": "mS"
 		},
 		"A": {
 			"s": "sC",
-			"m": "E"
+			"m": "E",
+			"l": "E",
 		},
 		"C": {
-			"c": "cA",
-			"m": "E"
+			"c": "csC",
+			"s": "E",
+			"m": "E",
+			"l": "E"
 		},
 		"R": {
-			"r": "rtlD",
+			"r": "rD",
 			"$": "E"
 		},
 		"D": {
-			"n": "nlF",
+			"t": "tlF",
 			"s": "slG"
 		},
 		"F": {
-			"n": "nltm",
-			"s": "sltm"
+			"n": "nlH",
+			"s": "slH"
 		},
-		"G": {
+		"H": {
 			"t": "TmR",
 			"n": "nltmR",
 			"s": "sltmR"
 		},
-		"T": {
-			"t": "tH"
+		"G": {
+			"t": "tlF",
+			"s": "AltlF",
+			"l": "AltlF",
+			"m": "AltlF",
 		},
-		"H": {
+		"T": {
+			"t": "tJ"
+		},
+		"J": {
 			"c": "cT",
 			"m": "E"
 		}
 	};
 
-	var checkSyntax = function() {
+	var checkSyntax = function () {
 		tokens = result;
 		var stack = ["$", "P"];
 		var error;
@@ -309,16 +322,16 @@ var Compiler = function(input, error_div) {
 	var tablelist = [];
 	var tablemap = {};
 
-	var CreateAttributeList = function() {
+	var CreateAttributeList = function () {
 		var list = [];
-		this.addA = function(attr) {
+		this.addA = function (attr) {
 			list[list.length] = {
 				a_name: attr.a_name,
 				a_type: attr.a_type
 			};
 		}
 		this.data = list;
-		this.addM = function(attr) {
+		this.addM = function (attr) {
 			var att_array = attr.split(",");
 			for (var i = 0; i < att_array.length; i++) {
 				if (att_array[i] == "") {
@@ -341,7 +354,7 @@ var Compiler = function(input, error_div) {
 				}
 			}
 		}
-		this.search = function(name) {
+		this.search = function (name) {
 			var flag = false;
 			for (var i = 0; i < list.length; i++) {
 				if (list[i].a_name == name) {
@@ -350,7 +363,7 @@ var Compiler = function(input, error_div) {
 			}
 			return -1;
 		}
-		this.delAtt = function(name) {
+		this.delAtt = function (name) {
 			var len = list.length;
 			for (var i = 0; i < len; i++) {
 				if (list[i].a_name == name) {
@@ -360,10 +373,10 @@ var Compiler = function(input, error_div) {
 				}
 			}
 		}
-		this.getAttributes = function() {
+		this.getAttributes = function () {
 			return list;
 		}
-		this.getPK = function() {
+		this.getPK = function () {
 			var pk_list = [];
 			for (var i = 0; i < list.length; i++) {
 				if (list[i].a_type == "pk") {
@@ -372,7 +385,7 @@ var Compiler = function(input, error_div) {
 			}
 			return pk_list;
 		}
-		this.getMV = function() {
+		this.getMV = function () {
 			var pk_list = [];
 			for (var i = 0; i < list.length; i++) {
 				if (list[i].type == "mv") {
@@ -383,7 +396,7 @@ var Compiler = function(input, error_div) {
 		}
 	}
 
-	var shiftTag = function() {
+	var shiftTag = function () {
 		var start = input.indexOf("<");
 		var end = input.indexOf("/>");
 		var token = input.substring(start, end + 2);
@@ -391,41 +404,44 @@ var Compiler = function(input, error_div) {
 		return token;
 	}
 
-	var shiftPK = function(para1, para2) {
-		var pk_list = tablemap[para2].getPK();
+	var shiftPK = function (para1, para2) {
+		var pk_list = tablemap[para2].getPK(),
+			name;
 		for (var i = 0; i < pk_list.length; i++) {
 			var type = "fk#" + para2 + ":" + pk_list[i].a_name;
+			if (tablemap[para1].search(pk_list[i].a_name) == -1) name = pk_list[i].a_name;
+			else name = para2.toLowerCase() + "_" + pk_list[i].a_name;
 			tablemap[para1].addA({
-				a_name: pk_list[i].a_name,
+				a_name: name,
 				a_type: type
 			})
 		}
 	}
 
-	var applyOneOne = function(para1, para2) {
+	var applyOneOne = function (para1, para2) {
 		shiftPK(para1, para2);
 	}
-	var applyOneMany = function(para1, para2) {
+	var applyOneMany = function (para1, para2) {
 		shiftPK(para2, para1);
 	}
-	var applyManyOne = function(para1, para2) {
+	var applyManyOne = function (para1, para2) {
 		shiftPK(para1, para2);
 	}
 
-	var applyManyMany = function(para1, para2) {
+	var applyManyMany = function (para1, para2, relname) {
 		var list1 = tablemap[para1].getPK();
 		var list2 = tablemap[para2].getPK();
-		var entity_name = para1 + "_" + para2;
+		var entity_name = (relname == undefined) ? para1 + "_" + para2 : relname;
 		var finallist = new CreateAttributeList();
 		for (var i = 0; i < list1.length; i++) {
 			finallist.addA({
-				a_name: list1[i].a_name,
+				a_name: para1.toLowerCase() + "_" + list1[i].a_name,
 				a_type: "pk"
 			});
 		}
 		for (var i = 0; i < list2.length; i++) {
 			finallist.addA({
-				a_name: list2[i].a_name,
+				a_name: para2.toLowerCase() + "_" + list2[i].a_name,
 				a_type: "pk"
 			});
 		}
@@ -433,13 +449,13 @@ var Compiler = function(input, error_div) {
 		tablelist.push(entity_name);
 	}
 
-	var applyISA = function(para1, para2, childlist) {
+	var applyISA = function (para1, para2, childlist) {
 		var complete_att = [];
 		for (var i = 0; i < childlist.length; i++) {
 			complete_att = complete_att.concat(tablemap[childlist[i]].getAttributes());
 		}
 
-		complete_att.sort(function(a, b) {
+		complete_att.sort(function (a, b) {
 			return (a.a_name > b.a_name);
 		});
 		var comm_att = [];
@@ -455,7 +471,7 @@ var Compiler = function(input, error_div) {
 				count = 1;
 			}
 		}
-
+		var para1_pklist = tablemap[para1].getPK();
 		for (var i = 0; i < comm_att.length; i++) {
 			if (tablemap[para1].search(comm_att[i].a_name) == -1) {
 				tablemap[para1].addA({
@@ -470,9 +486,19 @@ var Compiler = function(input, error_div) {
 				tablemap[childlist[j]].delAtt(comm_att[i].a_name);
 			}
 		}
+		for (var i = 0; i < childlist.length; i++) {
+			for (j = 0; j < para1_pklist.length; j++) {
+				if (tablemap[childlist[i]].search(para1_pklist[j].a_name) == -1) {
+					tablemap[childlist[i]].addA({
+						a_name: para1_pklist[j].a_name,
+						a_type: para1_pklist[j].a_type
+					});
+				}
+			}
+		}
 	}
 
-	var checkCommPK = function(childs) {
+	var checkCommPK = function (childs) {
 		var att_set = [];
 		var map = {};
 		var namelist = [];
@@ -494,7 +520,7 @@ var Compiler = function(input, error_div) {
 
 	}
 
-	var applyMV = function(entityname) {
+	var applyMV = function (entityname) {
 		var entity = tablemap[entityname];
 		var list = entity.getAttributes();
 		for (var i = 0; i < list.length; i++) {
@@ -524,240 +550,311 @@ var Compiler = function(input, error_div) {
 		}
 	}
 
-	var fetchValue = function(token) {
+	var fetchValue = function (token) {
 		var s = token.indexOf("='") + 2;
 		return token.substring(s, token.indexOf("'", s));
 	}
 
-	var runSemantic = function() {
+	var renameAtt = function (relname, attname) {
+		return relname.toLowerCase() + "_" + attname;
+	}
+
+	var moveRelAtt = function (entity, relname, attlist) {
+		for (var i = 0; i < attlist.data.length; i++) {
+			var name;
+			if (tablemap[entity].search(attlist.data[i].a_name) != -1) {
+				name = renameAtt(relname, attlist.data[i].a_name);
+			} else name = attlist.data[i].a_name;
+			tablemap[entity].addA({
+				a_name: name,
+				a_type: attlist.data[i].a_type
+			});
+		}
+	}
+
+	var runSemantic = function () {
 		input = result;
 		var state = 1;
 		var run = true;
 		var lineno = 1;
 
 		//Storage
-		var currtable = "";
-		var para1 = "";
-		var para2 = "";
-		var childlist = [];
-		var op1 = "";
-		var op2 = "";
+		var currtable, para1, para2, op1, op2, relname = "";
+		var childlist = [],
+			attlist = new CreateAttributeList();
 		while (run) {
-			//console.log(input);
 			var token = shiftTag();
+
+			//Table Token			
 			if (token.substr(0, 6) == "<TABLE") {
-				if (state == 1) {
+				switch (state) {
+
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 1:
 					state = 2;
 					currtable = fetchValue(token);
 					currtable = currtable.toUpperCase();
-					if (tablemap[currtable] === undefined) {
-
-						tablelist.push(currtable);
-						tablemap[currtable] = new CreateAttributeList();
-					} else {
-						run = false;
-						console.log("Duplicate Table : " + currtable + " found @ lineNo#" + lineno);
+					if (tablemap[currtable] != undefined) {
+						showError("Duplicate Table : " + currtable + " found @ lineNo#" + lineno);
+						return 1;
 					}
-				} else if (state == 5) {
-					state = 6;
+					tablelist.push(currtable);
+					tablemap[currtable] = new CreateAttributeList();
+					break;
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 3:
+				case 4:
+					state = 5;
 					para1 = fetchValue(token);
 					para1 = para1.toUpperCase();
 					if (tablemap[para1] == undefined) {
-						run = false;
-
-						console.log("Unknown Table : " + para1 + " found @ lineNo#" + lineno);
+						showError("Unknown Table : " + para1 + " found @ lineNo#" + lineno);
+						return 1;
 					}
-				} else if (state == 11) {
-					state = 12;
+
+					break;
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 7:
 					para2 = fetchValue(token);
 					para2 = para2.toUpperCase();
+					state = 8;
 					if (tablemap[para2] == undefined) {
-						run = false;
-						console.log("Unknown Table : " + para2 + " found @ lineNo#" + lineno);
+						showError("Unknown Table : " + para2 + " found @ lineNo#" + lineno);
+						return 1;
 					}
-				} else if (state == 16 || state == 17) {
-					state = 17;
+					break;
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 9:
+					state = 10
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 10:
 					var tname = fetchValue(token);
 					tname = tname.toUpperCase();
-
 					if (tablemap[tname] == undefined) {
-
-						run = false;
-						console.log("Unknown Table : " + tname + " found @ lineNo#" + lineno);
+						showError("Unknown Table : " + tname + " found @ lineNo#" + lineno);
+						return 1;
 					}
 					childlist.push(tname);
-				} else {
-					run = false;
-					console.log("Error at state : " + state);
+					break;
 				}
-			} else if (token.substr(0, 6) == "<COLON") {
-				if (state == 2) {
-					state = 3;
-				} else if (state == 6) {
-					state = 7;
-				} else if (state == 8) {
-					state = 9;
-				} else if (state == 10) {
-					state = 11;
-				} else if (state == 13) {
-					state = 9;
-				} else if (state == 14) {
-					state = 11;
-				} else if (state == 15) {
-					state = 16;
-				} else {
-					run = false;
-					console.log("Invalid Colon Position");
-				}
-			} else if (token.substr(0, 7) == "<STRING") {
-				if (state == 3) {
-					var att_val = fetchValue(token);
-					att_val = att_val.toLowerCase();
+			}
 
+			//<String
+			else if (token.substr(0, 7) == "<STRING") {
+				switch (state) {
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 2:
+					var att_val = fetchValue(token),
+						att_name, att_type;
+					att_val = att_val.toLowerCase();
 					if (att_val.substr(-3) == "_pk") {
-						var att_name = att_val.substring(0, att_val.length - 3);
-						var att_type = "pk";
-						if (tablemap[currtable].search(att_name) == -1) {
-							tablemap[currtable].addA({
-								a_name: att_name,
-								a_type: att_type
-							});
-						} else {
-							run = false;
-							console.log("Duplicate Attribute : " + att_name + " in table : " + currtable + " @ lineNo#" + lineno);
-						}
+						att_name = att_val.substring(0, att_val.length - 3);
+						att_type = "pk";
 					} else if (att_val.substr(-3) == "_mv") {
-						var att_name = att_val.substring(0, att_val.length - 3);
-						var att_type = "mv";
-						if (tablemap[currtable].search(att_name) == -1) {
-							tablemap[currtable].addA({
-								a_name: att_name,
-								a_type: att_type
-							});
-						} else {
-							run = false;
-							console.log("Duplicate Attribute : " + att_name + " in table : " + currtable + " @ lineNo#" + lineno);
-						}
+						att_name = att_val.substring(0, att_val.length - 3);
+						att_type = "mv";
 					} else {
 						var att_name = att_val;
 						var att_type = "";
-						if (tablemap[currtable].search(att_name) == -1) {
-							tablemap[currtable].addA({
-								a_name: att_name,
-								a_type: att_type
-							});
-						} else {
-							run = false;
-							console.log("Duplicate Attribute : " + att_name + " in table : " + currtable + " @ lineNo#" + lineno);
-						}
 					}
-				} else if (state == 7) {
-					state = 13;
-					op1 = fetchValue(token);
-					op1 = op1.toUpperCase();
-					if (op1 == "ISA") state = 15;
-					else if (op1 != "M") {
-						run = false;
-						console.log("Invalid Relation Found @ lineNo#" + lineno);
+
+					if (tablemap[currtable].search(att_name) == -1) {
+						tablemap[currtable].addA({
+							a_name: att_name,
+							a_type: att_type
+						});
+					} else {
+						showError("Duplicate Attribute : " + att_name + " in table : " + currtable + " @ lineNo#" + lineno);
+						return 1;
 					}
-				} else if (state == 9) {
-					state = 14;
+					break;
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 3:
+					relname = fetchValue(token);
+					relname = relname.toUpperCase();
+					state = 4;
+					if (tablemap[relname] != undefined) {
+						showError("Name conflict with Table : " + relname + " in Relation found @ lineNo#" + lineno);
+						return 1;
+					}
+					break;
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 4:
+					var att_val = fetchValue(token),
+						att_name, att_type;
+					att_val = att_val.toLowerCase();
+					if (att_val.substr(-3) == "_pk") {
+						att_name = att_val.substring(0, att_val.length - 3);
+						showError("Key Attributes are not allowed in as descriptive attribute : " + att_name + " in relation : " + relname + " @ lineNo#" + lineno);
+						return 1;
+					} else if (att_val.substr(-3) == "_mv") {
+						att_name = att_val.substring(0, att_val.length - 3);
+						att_type = "mv";
+					} else {
+						var att_name = att_val;
+						var att_type = "";
+					}
+
+					if (attlist.search(att_name) == -1) {
+						attlist.addA({
+							a_name: att_name,
+							a_type: att_type
+						});
+					} else {
+						showError("Duplicate Attribute : " + att_name + " in relation : " + relname + " @ lineNo#" + lineno);
+						return 1;
+					}
+
+					break;
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 5:
+					var map = fetchValue(token);
+					map.toUpperCase();
+					if (map == "M") {
+						state = 6;
+						op1 = map;
+					} else if (map == "ISA") {
+						state = 9;
+					} else {
+						showError("Invalid Relation Found @ lineNo#" + lineno);
+						return 1;
+					}
+					break;
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 6:
 					op2 = fetchValue(token);
-					op2 = op2.toUpperCase()
+					op2 = op2.toUpperCase();
+					state = 7;
 					if (op2 != "M") {
-						run = false;
-						console.log("Invalid Relation Found @ lineNo#" + lineno);
+						showError("Invalid Relation Found @ lineNo#" + lineno);
+						return 1;
 					}
-				} else {
-					run = false;
-					console.log("Invalid String Position");
+					break;
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++				
 				}
-			} else if (token.substr(0, 10) == "<SEMICOLON") {
-				if (state == 2 || state == 3) {
+			}
+
+			//Section
+			else if (token.substr(0, 8) == "<SECTION") {
+				state = 3;
+			}
+
+			//Semicolon
+			else if (token.substr(0, 10) == "<SEMICOLON") {
+				switch (state) {
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 2:
 					state = 1;
 					applyMV(currtable);
-					currtable = "";
-				} else if (state == 12) {
-					state = 4;
-					if (op1 == "1" && op2 == "1") {
-						//Apply OneOne on para1 and para2
-						applyOneOne(para1, para2);
-					} else if (op1 == "1" && op2 == "M") {
-						//Apply OneMany on para1 and para2		
-						applyOneMany(para1, para2);
-					} else if (op1 == "M" && op2 == "1") {
-						//Apply ManyOne on para1 and para2
-						applyManyOne(para1, para2);
-					} else if (op1 == "M" && op2 == "M") {
-						//Apply ManyMany on para1 and para2	
-						applyManyMany(para1, para2);
+					break;
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 8:
+					state = 3;
+					if (para1 == para2 && op1 == "M" && op2 == "M") {
+						showError("Many Many mapping found in self-referential relation @ lineNo#" + lineno);
+						return 1;
+					} else {
+						if (op1 == "1" && op2 == "1") {
+							moveRelAtt(para1, relname, attlist);
+							applyOneOne(para1, para2);
+							applyMV(para1);
+						} else if (op1 == "1" && op2 == "M") {
+							moveRelAtt(para2, relname, attlist);
+							applyOneMany(para1, para2);
+							applyMV(para2);
+						} else if (op1 == "M" && op2 == "1") {
+							moveRelAtt(para1, relname, attlist);
+							applyManyOne(para1, para2);
+							applyMV(para1);
+						} else {
+							if (relname == "") {
+								applyManyMany(para1, para2);
+								relname = para1 + "_" + para2;
+							} else applyManyMany(para1, para2, relname);
+							moveRelAtt(relname, relname, attlist);
+							applyMV(relname);
+						}
 					}
-				} else if (state == 17) {
+					break;
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 10:
+					state = 3;
 					if (checkCommPK(childlist)) {
 						applyISA(para1, para2, childlist);
+						childlist = [];
 					} else {
-						run = false;
-						console.log("Tables : " + childlist.join(", ") + " don't have common primary key");
+						showError("Tables : " + childlist.join(", ") + " don't have common primary key");
+						return 1;
 					}
+					break;
+				}
+			}
 
-				} else {
-					run = false;
-					console.log("Invalid Semicolon Position");
+			//Number
+			else if (token.substr(0, 7) == "<NUMBER") {
+				switch (state) {
+				case 5:
+					op1 = fetchValue(token);
+					state = 6;
+					if (op1 != "1") {
+						showError("Invalid Relation Found @ lineNo#" + lineno);
+						return 1;
+					}
+					break;
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				case 6:
+					op2 = fetchValue(token);
+					state = 7;
+					if (op2 != "1") {
+						showError("Invalid Relation Found @ lineNo#" + lineno);
+						return 1;
+					}
+					break;
+					//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++			
 				}
-			} else if (token.substr(0, 8) == "<SECTION") {
-				if (state == 1) {
-					state = 4;
-				}
-				/*run=false;
-					console.log("Semantic analysis completed");
-					console.log(tablemap);*/
+			}
+
+			//End
+			else if (token.substr(0, 4) == "<END") {
+				run = false;
 			} else if (token.substr(0, 8) == "<NEWLINE") {
 				lineno++;
-			} else if (token.substr(0, 9) == "<RELATION") {
-				if (state == 4) state = 5;
-			} else if (token.substr(0, 7) == "<NUMBER") {
-				if (state == 7) {
-					var val = fetchValue(token);
-					state = 8;
-					if (val == "1") {
-						op1 = val;
-					} else {
-						run = false;
-						console.log("Invalid Relation Found @ lineNo#" + lineno);
-					}
-
-				} else if (state == 9) {
-					var val = fetchValue(token);
-					state = 10;
-					if (val == "1") {
-						op2 = val;
-					} else {
-						run = false;
-						console.log("Invalid Relation Found @ lineNo#" + lineno);
-					}
-
-				}
-			} else if (token.substr(0, 4) == "<END") {
-				run = false;
-				console.log(tablemap);
 			}
 		}
+		return 0;
 
+	}
+
+	var setResultMarkup = function () {
+		var markup = "";
+		for (var i = 0; i < tablelist.length; i++) {
+			markup += "<p class='schema'> <span class='entity'>" + tablelist[i] + "</span> { ";
+			var attlist = tablemap[tablelist[i]].getAttributes();
+			var attstr = "";
+			for (var j = 0; j < attlist.length; j++) {
+				if (attlist[j].a_type == "pk") attstr += ("<span class='pk'>" + attlist[j].a_name + "</span>, ");
+				else if (attlist[j].a_type.substr(0, 2) == "fk") attstr += ("<span class='fk'>" + attlist[j].a_name + "</span>, ");
+				else attstr += (attlist[j].a_name + ", ");
+			}
+			markup += attstr.substr(0, attstr.length - 2);
+			markup += " }</p>";
+		}
+		showOutput(markup);
 	}
 
 
 	//================COMPILER Driver program=============
-	this.start = function() {
+	this.start = function () {
 		if (runLex()) {
+
 			if (checkSyntax()) {
-				runSemantic();
+				if (runSemantic() == 0) {
+					setResultMarkup();
+					return 0;
+				}
 			}
 		}
+		return 1;
+
 	}
 }
-
-	function gencode() {
-		document.getElementById('error').innerHTML = "";
-		var com = new Compiler(document.getElementById('script'), document.getElementById('error'));
-		com.start();
-	}
