@@ -1,4 +1,4 @@
-# Schema Generator
+# SchemOrigin
 
 ###About project
 In this project, **ER Model Description Script (ERD)** is introduced along with its compiler. ER Model Description Script (ERD) is used to represent graphical ER model to its textual equivalent. Its compiler translates given ER Model Description Script (ERD) to its equivalent Relational Database schema.
