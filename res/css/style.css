@@ -2253,6 +2253,12 @@ label {
     font-weight: bold;
 }
 
+.relation
+{
+    color: #007DFB;
+    font-weight: bold;
+}
+
 .pk
 {
     color: #00009B;

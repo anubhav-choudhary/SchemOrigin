@@ -42,6 +42,7 @@
             <!--logo end-->
             <div class="top-menu">
             	<ul class="nav pull-right top-menu">
+            			<li><a class="logout" href="index.html">Home</a></li>
                     <li><a class="logout" href="https://github.com/anubhavcho/SchemOrigin">View Source on GitHub</a></li>
             	</ul>
             </div>
@@ -108,45 +109,70 @@
       <!--main content start-->
       <section id="main-content">
           <section class="wrapper site-min-height">
-          	<h3><i class="fa fa-angle-right"></i> Write ERD to get Database Schema</h3>
+          	<h3><i class="fa fa-angle-right"></i> How to write ER Model Description (ERD)</h3>
           	<div class="row mt">
           		<div class="col-lg-12">
-                
-          		<div class="alert alert-success" style="display: none;" id="success"><b>Well done!</b> Your ERD translated successfully.</div>
-                <div class="alert alert-danger" style="display: none;" id="error"><b>Oh snap!</b> Change a few things up and try submitting again.</div>
-                <div class="form-panel">
-                <h4>ER Model Description (ERD)</h4></br>
-                <textarea class="form-control" id="erdscript" spellcheck=false style="min-height:250px;">#Customer:memberid_pk,pwd;
-#RegisteredMembers:address,name,age;
-#NonRegisteredMembers:limit;
-#VCD:vid_pk,type,title,status,price;
-#AvailableVCD;
-#NewVCD;
-#Shop:shop_id,shopname;
-%%
-@#Customer:ISA:#RegisteredMembers,#NonRegisteredMembers;
-@#VCD:ISA:#AvailableVCD,#NewVCD;
-@Purchases:#Customer:1:M:#AvailableVCD;
-@Sees:#Customer:M:M:#AvailableVCD;
-@Rents:rentdate:#RegisteredMembers:M:M:#VCD;
-@Keeps:#Shop:1:M:#AvailableVCD;
-@Orders:#Shop:1:M:#NewVCD;
-                </textarea></br>
-                <center><button type="button" class="btn btn-success" onclick="runERD();">Run</button></center>
-
-                </div>
-                
-                <div class="form-panel" id="outputpanel" style="display: none;">
-                <h4>Reduced Schema</h4>
-                <div id="databeseschema">
-                <p class="schema"><span class="entity">PERSON</span> { <span class="pk">emailid</span>, name, <span class="fk">address</span> }</p>
-                <p>FACULTY {emailid, salary, courseid}</p>
-                <p>FACULTY_PHONE {emailid, phone}</p>
-                <p>STUDENT {emailid, grade}</p>
-                <p>STUDENT_COURSE {emailid, courseid}</p>
-                <p>COURSE {courseid, name}</p>
-                </div>
-                </div>
+          		<center><img src="res/img/er1.png" alt="ER Model of Video Libray Shop" height="300" width="400"></center>
+    					<p class="text-justify">Let us write <b>ER Model Description (ERD)</b> for given Video Library Shop ER Model. Following are the steps to do the same.</p>
+    					<ol>
+							<li><p class="text-justify"><b>Make list of words written in rectangle :</b> In this step we will make list of words written in rectangle and the words will be prefixed by “#” sign. In this case following is the required list.</p>
+								<p class="entity">#Customer<br>#RegisteredMembers<br>#NonRegisteredMembers<br>#VCD<br>#AvailableVCD<br>#NewVCD<br>#Shop<br></p>							
+							</li>    				
+							<li><p class="text-justify"><b>Add attributes to each Entity Set :</b> In this step we will add attributes connected to each entity set. We will write all attributes of entity set separated by comma. If an attributed is key then “_pk” is suffixed with the attribute and if attribute is multi valued then “_mv” is suffixed. After listing all attributes semicolon is added at the last. In this case following is the required list</p>
+								<p><span = class="entity">#Customer</span>:memberid_pk,pwd;<br>
+<span = class="entity">#RegisteredMembers</span>:address,name,age;<br>
+<span = class="entity">#NonRegisteredMembers</span>:limit;<br>
+<span = class="entity">#VCD</span>:vid_pk,type,title,status,price;<br>
+<span = class="entity">#AvailableVCD</span>;<br>
+<span = class="entity">#NewVCD</span>;<br>
+<span = class="entity">#Shop</span>:shop_id,shopname;<br></p>							
+							</li> 	
+							<li><p class="text-justify"><b>Add “%%” after the above code to start entity set relation section :</b> The sign “%%” indicates the start of entity set relation section. So after adding “%%”, the given code becomes </p>
+								<p><span = class="entity">#Customer</span>:memberid_pk,pwd;<br>
+<span = class="entity">#RegisteredMembers</span>:address,name,age;<br>
+<span = class="entity">#NonRegisteredMembers</span>:limit;<br>
+<span = class="entity">#VCD</span>:vid_pk,type,title,status,price;<br>
+<span = class="entity">#AvailableVCD</span>;<br>
+<span = class="entity">#NewVCD</span>;<br>
+<span = class="entity">#Shop</span>:shop_id,shopname;<br>
+<span = class="relation">%%</span><br></p>							
+							</li> 
+							<li><p class="text-justify"><b>Identify “ISA” relationships i.e Generalization/Specialization :</b> In this step for each “ISA” relation identify general and special entity sets and add relationship code using the following syntax </p>
+								<p><b>Syntax :</b> <span = class="relation">@</span><span = class="entity">#GeneralEntity</span>:ISA:<span = class="entity">#Special1</span>,<span = class="entity">#Special2</span>,<span = class="entity">#Special3</span>;</p>							
+								<p class="text-justify">Using the above syntax, the given code becomes</p>
+								<p><span = class="entity">#Customer</span>:memberid_pk,pwd;<br>
+<span = class="entity">#RegisteredMembers</span>:address,name,age;<br>
+<span = class="entity">#NonRegisteredMembers</span>:limit;<br>
+<span = class="entity">#VCD</span>:vid_pk,type,title,status,price;<br>
+<span = class="entity">#AvailableVCD</span>;<br>
+<span = class="entity">#NewVCD</span>;<br>
+<span = class="entity">#Shop</span>:shop_id,shopname;<br>
+<span = class="relation">%%<br>
+@</span><span = class="entity">#Customer</span>:ISA:<span = class="entity">#RegisteredMembers</span>,<span = class="entity">#NonRegisteredMembers</span>;<br>
+<span = class="relation">@</span><span = class="entity">#VCD</span>:ISA:<span = class="entity">#AvailableVCD</span>,<span = class="entity">#NewVCD</span>;<br></p>
+							</li> 
+							<li><p class="text-justify"><b>Identify the “Diamonds” i,e Entity  Relationship :</b> In this step relationship between two entity sets are identified and relationship code is added using the following syntax</p>
+								<p><b>Syntax :</b> <span = class="relation">@RelationName</span>:DescriptiveAttribute1,DescriptiveAttribute2:<span = class="entity">#GeneralEntity</span>:X:X:<span = class="entity">#Special1</span>;<br>Here X could be 1 or M to show the cardinality of the relationship.</p>							
+								<p class="text-justify">Using the above syntax, the given code becomes</p>
+								<p><span = class="entity">#Customer</span>:memberid_pk,pwd;<br>
+<span = class="entity">#RegisteredMembers</span>:address,name,age;<br>
+<span = class="entity">#NonRegisteredMembers</span>:limit;<br>
+<span = class="entity">#VCD</span>:vid_pk,type,title,status,price;<br>
+<span = class="entity">#AvailableVCD</span>;<br>
+<span = class="entity">#NewVCD</span>;<br>
+<span = class="entity">#Shop</span>:shop_id,shopname;<br>
+<span = class="relation">%%<br>
+@</span><span = class="entity">#Customer</span>:ISA:<span = class="entity">#RegisteredMembers</span>,<span = class="entity">#NonRegisteredMembers</span>;<br>
+<span = class="relation">@</span><span = class="entity">#VCD</span>:ISA:<span = class="entity">#AvailableVCD</span>,<span = class="entity">#NewVCD</span>;<br>
+<span = class="relation">@Purchases</span>:<span = class="entity">#Customer</span>:1:M:<span = class="entity">#AvailableVCD</span>;<br>
+<span = class="relation">@Sees</span>:<span = class="entity">#Customer</span>:M:M:<span = class="entity">#AvailableVCD</span>;<br>
+<span = class="relation">@Rents</span>:rentdate:<span = class="entity">#RegisteredMembers</span>:M:M:<span = class="entity">#VCD</span>;<br>
+<span = class="relation">@Keeps</span>:<span = class="entity">#Shop</span>:1:M:<span = class="entity">#AvailableVCD</span>;<br>
+<span = class="relation">@Orders</span>:<span = class="entity">#Shop</span>:1:M:<span = class="entity">#NewVCD</span>;<br>
+</p>
+							</li>
+    					</ol>
+    					<p class="text-justify">The code illustrated above is the required ER Model Description (ERD).</p>
           		</div>
           	</div>
 			
@@ -245,7 +271,6 @@
 
 
     <!--common script for all pages-->
-    <script src="compiler/compiler.js"></script>
     <script src="res/js/common-scripts.js"></script>
   </body>
 </html>
