@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="Anubhav" >
+    <meta name="keyword" content="It is a translator form ER Model to Database Schema.">
+
+    <title>SchemOrigin</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="res/css/bootstrap.css" rel="stylesheet">
+    <!--external css-->
+    <link href="res/font-awesome/css/font-awesome.css" rel="stylesheet" />
+        
+    <!-- Custom styles for this template -->
+    <link href="res/css/style.css" rel="stylesheet">
+    <link href="res/css/style-responsive.css" rel="stylesheet">
+    
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+  <section id="container" >
+      <!-- **********************************************************************************************************************************************************
+      TOP BAR CONTENT & NOTIFICATIONS
+      *********************************************************************************************************************************************************** -->
+      <!--header start-->
+      <header class="header black-bg">
+              <div class="sidebar-toggle-box">
+                  <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
+              </div>
+            <!--logo start-->
+            <a href="index.html" class="logo"><b>SchemOrigin</b></a>
+            <!--logo end-->
+            <div class="top-menu">
+            	<ul class="nav pull-right top-menu">
+                    <li><a class="logout" href="https://github.com/anubhavcho/SchemOrigin">View Source on GitHub</a></li>
+            	</ul>
+            </div>
+        </header>
+      <!--header end-->
+      
+      <!-- **********************************************************************************************************************************************************
+      MAIN SIDEBAR MENU
+      *********************************************************************************************************************************************************** -->
+      <!--sidebar start-->
+      <aside>
+          <div id="sidebar"  class="nav-collapse ">
+              <!-- sidebar menu start-->
+              <ul class="sidebar-menu" id="nav-accordion">
+             	  	
+                  <li class="sub-menu" >
+                      <a href="" data-toggle="modal" data-target="#about">
+                          <i class="fa fa-dashboard"></i>
+                          <span>About SchemOrigin</span>
+
+                      </a>
+                  </li>
+
+                  <li class="sub-menu">
+                      <a href="" data-toggle="modal" data-target="#feature" >
+                          <i class="fa fa-desktop"></i>
+                          <span>Features</span>
+                      </a>
+                  </li>
+
+                  <li class="sub-menu">
+                      <a href="write.html">
+                          <i class="fa fa-cogs"></i>
+                          <span>How to write ERD?</span>
+                      </a>
+                  </li>
+                  <li class="sub-menu">
+                      <a href="rules.html">
+                          <i class="fa fa-book"></i>
+                          <span>Rules for ERD</span>
+                      </a>
+                  </li>
+                  <li class="sub-menu">
+                      <a href="https://github.com/anubhavcho/SchemOrigin" >
+                          <i class="fa fa-tasks"></i>
+                          <span>View Source on GitHub</span>
+                      </a>
+                  </li>
+                  <li class="sub-menu">
+                      <a href="" data-toggle="modal" data-target="#credit">
+                          <i class="fa fa-th"></i>
+                          <span>Credits</span>
+                      </a>
+                  </li>
+              </ul>
+              <!-- sidebar menu end-->
+          </div>
+      </aside>
+      <!--sidebar end-->
+      
+      <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+      *********************************************************************************************************************************************************** -->
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper site-min-height">
+          	<h3><i class="fa fa-angle-right"></i> Write ERD to get Database Schema</h3>
+          	<div class="row mt">
+          		<div class="col-lg-12">
+                
+          		<div class="alert alert-success" style="display: none;" id="success"><b>Well done!</b> Your ERD translated successfully.</div>
+                <div class="alert alert-danger" style="display: none;" id="error"><b>Oh snap!</b> Change a few things up and try submitting again.</div>
+                <div class="form-panel">
+                <h4>ER Model Description (ERD)</h4></br>
+                <textarea class="form-control" id="erdscript" spellcheck=false style="min-height:250px;">#Customer:memberid_pk,pwd;
+#RegisteredMembers:address,name,age;
+#NonRegisteredMembers:limit;
+#VCD:vid_pk,type,title,status,price;
+#AvailableVCD;
+#NewVCD;
+#Shop:shop_id,shopname;
+%%
+@#Customer:ISA:#RegisteredMembers,#NonRegisteredMembers;
+@#VCD:ISA:#AvailableVCD,#NewVCD;
+@Purchases:#Customer:1:M:#AvailableVCD;
+@Sees:#Customer:M:M:#AvailableVCD;
+@Rents:rentdate:#RegisteredMembers:M:M:#VCD;
+@Keeps:#Shop:1:M:#AvailableVCD;
+@Orders:#Shop:1:M:#NewVCD;
+                </textarea></br>
+                <center><button type="button" class="btn btn-success" onclick="runERD();">Run</button></center>
+
+                </div>
+                
+                <div class="form-panel" id="outputpanel" style="display: none;">
+                <h4>Reduced Schema</h4>
+                <div id="databeseschema">
+                <p class="schema"><span class="entity">PERSON</span> { <span class="pk">emailid</span>, name, <span class="fk">address</span> }</p>
+                <p>FACULTY {emailid, salary, courseid}</p>
+                <p>FACULTY_PHONE {emailid, phone}</p>
+                <p>STUDENT {emailid, grade}</p>
+                <p>STUDENT_COURSE {emailid, courseid}</p>
+                <p>COURSE {courseid, name}</p>
+                </div>
+                </div>
+          		</div>
+          	</div>
+			
+		</section><! --/wrapper -->
+      </section><!-- /MAIN CONTENT -->
+
+      <!--main content end-->
+      <!--footer start-->
+      <footer class="site-footer">
+          <div class="text-center">
+              Hosted on GitHub.io
+              <a href="#" class="go-top">
+                  <i class="fa fa-angle-up"></i>
+              </a>
+          </div>
+      </footer>
+      <!--footer end-->
+  </section>
+  
+<!-- About Modal -->
+<div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">About SchemOrigin</h4>
+            </div>
+            <div class="modal-body">
+                </br>
+                <p class="text-justify">In this project, <b>ER Model Description Script (ERD)</b> is introduced along with its compiler. ER Model Description Script (ERD) is used to represent graphical ER model to its textual equivalent. Its compiler translates given ER Model Description Script (ERD) to its equivalent Relational Database schema.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>						        
+            </div>
+        </div>
+    </div>
+</div>
+<!--Model End -->
+
+<!-- Feature Modal -->
+<div class="modal fade" id="feature" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Features of Schema Generator</h4>
+            </div>
+            <div class="modal-body">
+                <ol>
+                    <li>Converts ER Model to Database Schema.</li>
+                    <li>It can apply 1-1, 1-M, M-N and ISA relationship to entities.</li>
+                    <li>Multi-Valued attributes are supported.</li>
+                    <li>Descriptive attributes are supported.</li>
+                    <li>Automatic attribute name conflict resolution.</li>
+                    <li>Syntax and semantic errors can be detected in ER Model Description script (ERD).</li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>						        
+            </div>
+        </div>
+    </div>
+</div>
+<!--Model End -->
+
+<!-- About Modal -->
+<div class="modal fade" id="credit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Developed By</h4>
+            </div>
+            <div class="modal-body">
+                </br>
+                <p class="text-justify"><strong>Anubhav Choudhary</strong><br />KIIT University, Bhubaneswar, Odisha, India<br /><strong>GitHub :</strong> <a target="_blank" href="https://github.com/anubhavcho/">https://github.com/anubhavcho/</a><br /><strong>LinkedIn :</strong> <a target="_blank" href="http://in.linkedin.com/in/anubhavcho">http://in.linkedin.com/in/anubhavcho</a></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>						        
+            </div>
+        </div>
+    </div>
+</div>
+<!--Model End -->
+
+
+
+
+
+    <!-- js placed at the end of the document so the pages load faster -->
+    <script src="res/js/jquery.js"></script>
+    <script src="res/js/bootstrap.min.js"></script>
+    <script src="res/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="res/js/jquery.scrollTo.min.js"></script>
+    <script src="res/js/jquery.nicescroll.js" type="text/javascript"></script>
+
+
+    <!--common script for all pages-->
+    <script src="compiler/compiler.js"></script>
+    <script src="res/js/common-scripts.js"></script>
+  </body>
+</html>
