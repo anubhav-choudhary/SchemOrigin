@@ -21,4 +21,4 @@ In this project, **ER Model Description Script (ERD)** is introduced along with 
 
 [Click here]:http://anubhavcho.github.io/SchemOrigin/index.html
 [See how to write ERD]:http://anubhavcho.github.io/SchemOrigin/write.html
-[See the rules for writing ERD]::http://anubhavcho.github.io/SchemOrigin/rules.html
+[See the rules for writing ERD]:http://anubhavcho.github.io/SchemOrigin/rules.html
